@@ -25,22 +25,24 @@
     <!-- dial -->
     <div class="relative mx-auto mb-16 h-[320px] w-[320px] md:h-[380px] md:w-[380px]">
       <!-- floating tags -->
+      
       <div [class.tag-visible]="activeTag === 0"
-        class="tag-chip absolute z-20 -left-32 top-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        Quest completed: +50 XP
-      </div>
-      <div [class.tag-visible]="activeTag === 1"
         class="tag-chip absolute z-20 -right-36 top-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
         Level 4 reached
+      </div>
+      <div [class.tag-visible]="activeTag === 1"
+        class="tag-chip absolute z-20 -right-32 bottom-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
+        New quest available
       </div>
       <div [class.tag-visible]="activeTag === 2"
         class="tag-chip absolute z-20 -left-24 bottom-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
         7-day streak active
       </div>
       <div [class.tag-visible]="activeTag === 3"
-        class="tag-chip absolute z-20 -right-32 bottom-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        New quest available
+        class="tag-chip absolute z-20 -left-32 top-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
+        Quest completed: +50 XP
       </div>
+      
 
       <!-- outer metal bezel -->
       <div class="absolute inset-0 rounded-full"

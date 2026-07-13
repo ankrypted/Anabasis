@@ -35,10 +35,10 @@ interface Stage {
 }
 
 const STAGES: Stage[] = [
-  { percent: 20, tag: 0 }, // Quest completed: +50 XP
-  { percent: 45, tag: 1 }, // Level 4 reached
+  { percent: 20, tag: 0 }, // Level 4 reached
+  { percent: 45, tag: 1 }, // New quest available
   { percent: 70, tag: 2 }, // 7-day streak active
-  { percent: 90, tag: 3 }, // New quest available
+  { percent: 90, tag: 3 }, // Quest completed: +50 XP
 ];
 
 const FILL_SEGMENT_MS = 800;
