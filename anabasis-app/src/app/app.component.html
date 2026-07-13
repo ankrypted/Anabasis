@@ -52,8 +52,9 @@
         <circle
           cx="100" cy="100" r="88" fill="none"
           stroke="#FF6B00" stroke-width="6" stroke-linecap="round"
-          stroke-dasharray="552.9" stroke-dashoffset="55.3"
-          class="drop-shadow-neon transition-all duration-700" />
+          [attr.stroke-dasharray]="circumference"
+          [attr.stroke-dashoffset]="dashoffset"
+          class="drop-shadow-neon" />
       </svg>
 
       <!-- center knob -->
@@ -77,7 +78,7 @@
         </p>
       </div>
       <div class="text-left md:text-right">
-        <div class="text-5xl md:text-6xl font-bold text-neon-orange drop-shadow-neon leading-none">90%</div>
+        <div class="text-5xl md:text-6xl font-bold text-neon-orange drop-shadow-neon leading-none">{{ percent }}%</div>
         <div class="mt-2 text-neon-orange/90 text-sm md:text-base">Security Score</div>
       </div>
     </div>
