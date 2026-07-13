@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 const RADIUS = 88;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-const FILL_DURATION_MS = 1800;
 
 const TICK_COUNT = 48;
 const TICK_INNER_R = 68;
@@ -30,6 +29,24 @@ function buildTicks(): Tick[] {
   return ticks;
 }
 
+interface Stage {
+  percent: number;
+  tag: number;
+}
+
+const STAGES: Stage[] = [
+  { percent: 20, tag: 0 }, // Quest completed: +50 XP
+  { percent: 45, tag: 1 }, // Level 4 reached
+  { percent: 70, tag: 2 }, // 7-day streak active
+  { percent: 90, tag: 3 }, // New quest available
+];
+
+const FILL_SEGMENT_MS = 800;
+const TAG_HOLD_MS = 1400;
+const TAG_FADE_MS = 450;
+const LOOP_RESTART_DELAY_MS = 500;
+const LOOP_END_HOLD_MS = 1200;
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -39,39 +56,85 @@ function buildTicks(): Tick[] {
 })
 export class AppComponent implements OnInit, OnDestroy {
   readonly circumference = CIRCUMFERENCE;
-  readonly targetPercent = 90;
   readonly level = 4;
   readonly ticks = buildTicks();
 
   percent = 0;
   dashoffset = CIRCUMFERENCE;
+  activeTag = -1;
 
   private rafId: number | null = null;
+  private destroyed = false;
 
   ngOnInit(): void {
-    this.animateFill();
+    this.runLoop();
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     if (this.rafId !== null) {
       cancelAnimationFrame(this.rafId);
     }
   }
 
-  private animateFill(): void {
-    const start = performance.now();
+  private async runLoop(): Promise<void> {
+    while (!this.destroyed) {
+      this.percent = 0;
+      this.dashoffset = this.circumference;
+      this.activeTag = -1;
+      await this.wait(LOOP_RESTART_DELAY_MS);
+
+      for (const stage of STAGES) {
+        if (this.destroyed) return;
+        await this.animateFillTo(stage.percent, FILL_SEGMENT_MS);
+
+        if (this.destroyed) return;
+        this.activeTag = stage.tag;
+        await this.wait(TAG_HOLD_MS);
+
+        if (this.destroyed) return;
+        this.activeTag = -1;
+        await this.wait(TAG_FADE_MS);
+      }
+
+      if (this.destroyed) return;
+      await this.wait(LOOP_END_HOLD_MS);
+    }
+  }
+
+  private animateFillTo(toPercent: number, duration: number): Promise<void> {
+    const fromPercent = this.percent;
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
-    const step = (now: number) => {
-      const t = Math.min((now - start) / FILL_DURATION_MS, 1);
-      const eased = easeOutCubic(t);
+    return new Promise((resolve) => {
+      const start = performance.now();
 
-      this.percent = Math.round(eased * this.targetPercent);
-      this.dashoffset = this.circumference * (1 - (eased * this.targetPercent) / 100);
+      const step = (now: number) => {
+        if (this.destroyed) {
+          resolve();
+          return;
+        }
 
-      this.rafId = t < 1 ? requestAnimationFrame(step) : null;
-    };
+        const t = Math.min((now - start) / duration, 1);
+        const eased = easeOutCubic(t);
+        const current = fromPercent + (toPercent - fromPercent) * eased;
 
-    this.rafId = requestAnimationFrame(step);
+        this.percent = Math.round(current);
+        this.dashoffset = this.circumference * (1 - current / 100);
+
+        if (t < 1) {
+          this.rafId = requestAnimationFrame(step);
+        } else {
+          this.rafId = null;
+          resolve();
+        }
+      };
+
+      this.rafId = requestAnimationFrame(step);
+    });
+  }
+
+  private wait(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
