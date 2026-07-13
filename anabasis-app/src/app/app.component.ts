@@ -14,6 +14,7 @@ const FILL_DURATION_MS = 1800;
 export class AppComponent implements OnInit, OnDestroy {
   readonly circumference = CIRCUMFERENCE;
   readonly targetPercent = 90;
+  readonly level = 4;
 
   percent = 0;
   dashoffset = CIRCUMFERENCE;

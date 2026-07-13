@@ -9,14 +9,14 @@
       <span class="font-semibold tracking-wide">Anabasis</span>
     </div>
     <ul class="hidden md:flex items-center gap-10 text-sm text-gray-300">
-      <li class="hover:text-white cursor-pointer">About Us</li>
-      <li class="hover:text-white cursor-pointer">Services</li>
-      <li class="hover:text-white cursor-pointer">Tech &amp; Security</li>
-      <li class="hover:text-white cursor-pointer">Contact Us</li>
+      <li class="hover:text-white cursor-pointer">Quests</li>
+      <li class="hover:text-white cursor-pointer">Progress</li>
+      <li class="hover:text-white cursor-pointer">Streaks</li>
+      <li class="hover:text-white cursor-pointer">Profile</li>
     </ul>
     <button
       class="relative border border-neon-orange/60 text-neon-orange text-xs font-medium tracking-wide px-4 py-2 rounded-sm hover:bg-neon-orange/10 transition-colors">
-      Join Waitlist
+      Get Started
     </button>
   </nav>
 
@@ -27,19 +27,19 @@
       <!-- floating tags -->
       <div
         class="absolute z-20 -left-32 top-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        Two-factor authentication enabled
+        Quest completed: +50 XP
       </div>
       <div
         class="absolute z-20 -right-36 top-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        Weak &amp; reused passwords detected
+        Level 4 reached
       </div>
       <div
         class="absolute z-20 -left-24 bottom-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        Protection fully active
+        7-day streak active
       </div>
       <div
         class="absolute z-20 -right-32 bottom-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        Live threat detection enabled
+        New quest available
       </div>
 
       <!-- outer disc -->
@@ -70,16 +70,16 @@
     <div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-10">
       <div class="max-w-xl">
         <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">
-          WATCH YOUR<br />SECURITY IMPROVE
+          COMPLETE QUESTS.<br />LEVEL UP YOUR LIFE.
         </h1>
         <p class="mt-4 text-gray-400 text-sm md:text-base">
-          See your security grow in real time. From passwords to digital identities,
-          track improvements and enjoy peace of mind.
+          Turn your goals into quests, earn XP for every completion, and
+          watch your streak and level grow in real time.
         </p>
       </div>
       <div class="text-left md:text-right">
-        <div class="text-5xl md:text-6xl font-bold text-neon-orange drop-shadow-neon leading-none">{{ percent }}%</div>
-        <div class="mt-2 text-neon-orange/90 text-sm md:text-base">Security Score</div>
+        <div class="text-5xl md:text-6xl font-bold text-neon-orange drop-shadow-neon leading-none">Level {{ level }}</div>
+        <div class="mt-2 text-neon-orange/90 text-sm md:text-base">{{ percent }}% to next level</div>
       </div>
     </div>
   </section>
