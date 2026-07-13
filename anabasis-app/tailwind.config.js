@@ -16,6 +16,19 @@ module.exports = {
       dropShadow: {
         neon: '0 0 8px rgba(255,107,0,0.8)',
       },
+      keyframes: {
+        'tag-pop': {
+          '0%':   { opacity: '0', transform: 'translateY(10px) scale(0.6)' },
+          '12%':  { opacity: '1', transform: 'translateY(-6px) scale(1.08)' },
+          '20%':  { opacity: '1', transform: 'translateY(0) scale(1)' },
+          '70%':  { opacity: '1', transform: 'translateY(0) scale(1)' },
+          '85%':  { opacity: '0', transform: 'translateY(-12px) scale(0.9)' },
+          '100%': { opacity: '0', transform: 'translateY(-12px) scale(0.9)' },
+        },
+      },
+      animation: {
+        'tag-pop': 'tag-pop 4.5s ease-in-out infinite',
+      },
     },
   },
   plugins: [],
