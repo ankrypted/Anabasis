@@ -1,0 +1,85 @@
+<main class="min-h-screen w-full bg-black text-white overflow-hidden relative">
+  <!-- ambient glow -->
+  <div class="pointer-events-none absolute -top-40 left-10 h-96 w-96 rounded-full bg-neon-orange/20 blur-3xl"></div>
+
+  <!-- nav -->
+  <nav class="relative z-10 flex items-center justify-between px-8 md:px-16 py-6">
+    <div class="flex items-center gap-2">
+      <span class="text-neon-orange text-xl">✱</span>
+      <span class="font-semibold tracking-wide">Anabasis</span>
+    </div>
+    <ul class="hidden md:flex items-center gap-10 text-sm text-gray-300">
+      <li class="hover:text-white cursor-pointer">About Us</li>
+      <li class="hover:text-white cursor-pointer">Services</li>
+      <li class="hover:text-white cursor-pointer">Tech &amp; Security</li>
+      <li class="hover:text-white cursor-pointer">Contact Us</li>
+    </ul>
+    <button
+      class="relative border border-neon-orange/60 text-neon-orange text-xs font-medium tracking-wide px-4 py-2 rounded-sm hover:bg-neon-orange/10 transition-colors">
+      Join Waitlist
+    </button>
+  </nav>
+
+  <!-- hero -->
+  <section class="relative z-10 px-8 md:px-16 pt-8 pb-24">
+    <!-- dial -->
+    <div class="relative mx-auto mb-16 h-[320px] w-[320px] md:h-[380px] md:w-[380px]">
+      <!-- floating tags -->
+      <div
+        class="absolute z-20 -left-32 top-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
+        Two-factor authentication enabled
+      </div>
+      <div
+        class="absolute z-20 -right-36 top-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
+        Weak &amp; reused passwords detected
+      </div>
+      <div
+        class="absolute z-20 -left-24 bottom-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
+        Protection fully active
+      </div>
+      <div
+        class="absolute z-20 -right-32 bottom-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
+        Live threat detection enabled
+      </div>
+
+      <!-- outer disc -->
+      <div class="absolute inset-0 rounded-full bg-gradient-to-b from-neutral-800 to-black shadow-2xl"></div>
+      <div class="absolute inset-6 rounded-full bg-gradient-to-b from-black to-neutral-900 shadow-inner"></div>
+
+      <!-- glowing progress ring -->
+      <svg viewBox="0 0 200 200" class="absolute inset-0 h-full w-full -rotate-90">
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#1a1a1a" stroke-width="6" />
+        <circle
+          cx="100" cy="100" r="88" fill="none"
+          stroke="#FF6B00" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="552.9" stroke-dashoffset="55.3"
+          class="drop-shadow-neon transition-all duration-700" />
+      </svg>
+
+      <!-- center knob -->
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div
+          class="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-b from-neutral-700 to-black shadow-neon-sm">
+          <span class="text-neon-orange text-3xl drop-shadow-neon">✱</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- copy row -->
+    <div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-10">
+      <div class="max-w-xl">
+        <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">
+          WATCH YOUR<br />SECURITY IMPROVE
+        </h1>
+        <p class="mt-4 text-gray-400 text-sm md:text-base">
+          See your security grow in real time. From passwords to digital identities,
+          track improvements and enjoy peace of mind.
+        </p>
+      </div>
+      <div class="text-left md:text-right">
+        <div class="text-5xl md:text-6xl font-bold text-neon-orange drop-shadow-neon leading-none">90%</div>
+        <div class="mt-2 text-neon-orange/90 text-sm md:text-base">Security Score</div>
+      </div>
+    </div>
+  </section>
+</main>
