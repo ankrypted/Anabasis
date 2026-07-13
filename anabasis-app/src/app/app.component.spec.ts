@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'anabasis-app' title`, () => {
+  it('should default to login mode', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('anabasis-app');
+    expect(app.authMode).toBe('login');
   });
 
-  it('should render title', () => {
+  it('should render the app heading', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, anabasis-app');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Solo Quest Tracker');
   });
 });

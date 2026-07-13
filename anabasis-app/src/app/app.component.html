@@ -1,111 +1,128 @@
-<main class="min-h-screen w-full bg-black text-white overflow-hidden relative">
-  <!-- ambient glow -->
-  <div class="pointer-events-none absolute -top-40 left-10 h-96 w-96 rounded-full bg-neon-orange/20 blur-3xl"></div>
+<main class="app-shell">
+  <div class="bg-shape bg-shape-a"></div>
+  <div class="bg-shape bg-shape-b"></div>
 
-  <!-- nav -->
-  <nav class="relative z-10 flex items-center justify-between px-8 md:px-16 py-6">
-    <div class="flex items-center gap-2">
-      <span class="text-neon-orange text-xl">✱</span>
-      <span class="font-semibold tracking-wide">Anabasis</span>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Anabasis</p>
+      <h1>Solo Quest Tracker</h1>
     </div>
-    <ul class="hidden md:flex items-center gap-10 text-sm text-gray-300">
-      <li class="hover:text-white cursor-pointer">Quests</li>
-      <li class="hover:text-white cursor-pointer">Progress</li>
-      <li class="hover:text-white cursor-pointer">Streaks</li>
-      <li class="hover:text-white cursor-pointer">Profile</li>
-    </ul>
-    <button
-      class="relative border border-neon-orange/60 text-neon-orange text-xs font-medium tracking-wide px-4 py-2 rounded-sm hover:bg-neon-orange/10 transition-colors">
-      Get Started
-    </button>
-  </nav>
+    <button *ngIf="sessionUser" type="button" class="btn ghost" (click)="logout()">Logout</button>
+  </header>
 
-  <!-- hero -->
-  <section class="relative z-10 px-8 md:px-16 pt-8 pb-24">
-    <!-- dial -->
-    <div class="relative mx-auto mb-16 h-[320px] w-[320px] md:h-[380px] md:w-[380px]">
-      <!-- floating tags -->
-      
-      <div [class.tag-visible]="activeTag === 0"
-        class="tag-chip absolute z-20 -right-36 top-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        Level 4 reached
-      </div>
-      <div [class.tag-visible]="activeTag === 1"
-        class="tag-chip absolute z-20 -right-32 bottom-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        New quest available
-      </div>
-      <div [class.tag-visible]="activeTag === 2"
-        class="tag-chip absolute z-20 -left-24 bottom-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        7-day streak active
-      </div>
-      <div [class.tag-visible]="activeTag === 3"
-        class="tag-chip absolute z-20 -left-32 top-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        Quest completed: +50 XP
-      </div>
-      
+  <p class="message" *ngIf="statusMessage">{{ statusMessage }}</p>
 
-      <!-- outer metal bezel -->
-      <div class="absolute inset-0 rounded-full"
-        style="background: radial-gradient(circle at 32% 28%, #4a4a4a 0%, #1c1c1c 45%, #000 75%);
-               box-shadow: 0 25px 50px -12px rgba(0,0,0,0.9), inset 0 2px 3px rgba(255,255,255,0.08), inset 0 -10px 24px rgba(0,0,0,0.85);">
-      </div>
+  <section class="auth-panel" *ngIf="!sessionUser">
+    <div class="auth-tabs">
+      <button type="button" [class.active]="authMode === 'login'" (click)="authMode = 'login'">Login</button>
+      <button type="button" [class.active]="authMode === 'register'" (click)="authMode = 'register'">Register</button>
+    </div>
 
-      <!-- recessed face -->
-      <div class="absolute inset-8 rounded-full"
-        style="background: radial-gradient(circle at 35% 30%, #202020 0%, #0a0a0a 55%, #000 100%);
-               box-shadow: inset 0 6px 16px rgba(0,0,0,0.9), inset 0 -4px 10px rgba(255,255,255,0.04);">
-      </div>
+    <form class="auth-form" (ngSubmit)="submitAuth()">
+      <label>
+        Email
+        <input type="email" name="email" [(ngModel)]="authEmail" required />
+      </label>
+      <label>
+        Password
+        <input type="password" name="password" [(ngModel)]="authPassword" required minlength="4" />
+      </label>
+      <button type="submit" class="btn primary">{{ authMode === 'login' ? 'Enter Gate' : 'Create Hunter' }}</button>
+    </form>
+  </section>
 
-      <!-- tick marks -->
-      <svg viewBox="0 0 200 200" class="absolute inset-0 h-full w-full">
-        <g stroke="#FF9A4D" stroke-width="1.4" stroke-linecap="round" opacity="0.45">
-          <line *ngFor="let t of ticks" [attr.x1]="t.x1" [attr.y1]="t.y1" [attr.x2]="t.x2" [attr.y2]="t.y2" />
-        </g>
-      </svg>
+  <section class="dashboard" *ngIf="sessionUser">
+    <article class="card progress-card">
+      <h2>Progress</h2>
+      <p class="sub">{{ sessionUser.email }}</p>
 
-      <!-- glowing progress ring (torus highlight) -->
-      <svg viewBox="0 0 200 200" class="absolute inset-0 h-full w-full -rotate-90">
-        <defs>
-          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#FFD9A0" />
-            <stop offset="45%" stop-color="#FF6B00" />
-            <stop offset="100%" stop-color="#B23F00" />
-          </linearGradient>
-        </defs>
-        <circle cx="100" cy="100" r="88" fill="none" stroke="#1a1a1a" stroke-width="7" />
-        <circle
-          cx="100" cy="100" r="88" fill="none"
-          stroke="url(#ringGrad)" stroke-width="7" stroke-linecap="round"
-          [attr.stroke-dasharray]="circumference"
-          [attr.stroke-dashoffset]="dashoffset"
-          class="drop-shadow-neon" />
-      </svg>
-
-      <!-- center knob -->
-      <div class="absolute inset-0 flex items-center justify-center">
-        <div class="flex h-20 w-20 items-center justify-center rounded-full"
-          style="background: radial-gradient(circle at 35% 30%, #4a4a4a 0%, #0c0c0c 60%, #000 100%);
-                 box-shadow: 0 6px 14px rgba(0,0,0,0.8), inset 0 2px 3px rgba(255,255,255,0.18), inset 0 -4px 8px rgba(0,0,0,0.85);">
-          <span class="text-neon-orange text-3xl font-extrabold drop-shadow-neon">A</span>
+      <div class="level-row">
+        <div>
+          <p class="metric-label">Level</p>
+          <p class="metric">{{ progress.level }}</p>
+        </div>
+        <div>
+          <p class="metric-label">Total XP</p>
+          <p class="metric">{{ progress.totalXp }}</p>
+        </div>
+        <div>
+          <p class="metric-label">Streak</p>
+          <p class="metric">{{ progress.currentStreak }} day(s)</p>
         </div>
       </div>
-    </div>
 
-    <!-- copy row -->
-    <div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-10">
-      <div class="max-w-xl">
-        <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">
-          COMPLETE QUESTS.<br />LEVEL UP YOUR LIFE.
-        </h1>
-        <p class="mt-4 text-gray-400 text-sm md:text-base">
-          Turn your goals into quests, earn XP for every completion, and
-          watch your streak and level grow in real time.
-        </p>
+      <div class="xp-track">
+        <div class="xp-fill" [style.width.%]="levelProgress.percent"></div>
       </div>
-      <div class="text-left md:text-right">
-        <div class="text-5xl md:text-6xl font-bold text-neon-orange drop-shadow-neon leading-none">Level {{ level }}</div>
-        <div class="mt-2 text-neon-orange/90 text-sm md:text-base">{{ percent }}% to next level</div>
+      <p class="sub">{{ levelProgress.current }}/{{ levelProgress.needed }} XP to next level</p>
+    </article>
+
+    <article class="card form-card">
+      <h2>Add Quest</h2>
+      <form class="quest-form" (ngSubmit)="addQuest()">
+        <label>
+          Quest title
+          <input type="text" name="questTitle" [(ngModel)]="questTitle" placeholder="Read 20 pages" required />
+        </label>
+
+        <label>
+          Difficulty
+          <select name="difficulty" [(ngModel)]="questDifficulty">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </label>
+
+        <label>
+          Recurrence
+          <select name="recurrence" [(ngModel)]="recurrenceType">
+            <option value="daily">Daily</option>
+            <option value="weekdays">Weekdays</option>
+            <option value="custom">Custom days</option>
+          </select>
+        </label>
+
+        <div class="days-row" *ngIf="recurrenceType === 'custom'">
+          <button
+            type="button"
+            *ngFor="let day of weekdays"
+            [class.selected]="isDaySelected(day.value)"
+            (click)="toggleCustomDay(day.value)">
+            {{ day.label }}
+          </button>
+        </div>
+
+        <button type="submit" class="btn primary">Save quest</button>
+      </form>
+    </article>
+
+    <article class="card list-card">
+      <div class="list-head">
+        <h2>Today Quests</h2>
+        <p>{{ completionCount }}/{{ quests.length }} complete</p>
       </div>
-    </div>
+
+      <ul *ngIf="quests.length > 0; else emptyState">
+        <li *ngFor="let quest of quests" [class.completed]="quest.completedAt">
+          <div>
+            <p class="quest-title">{{ quest.title }}</p>
+            <p class="sub">{{ difficultyLabel(quest.difficulty) }}</p>
+          </div>
+          <button
+            type="button"
+            class="btn"
+            [class.ghost]="quest.completedAt"
+            [disabled]="!!quest.completedAt"
+            (click)="completeQuest(quest.id)">
+            {{ quest.completedAt ? 'Completed' : 'Complete' }}
+          </button>
+        </li>
+      </ul>
+
+      <ng-template #emptyState>
+        <p class="sub">No quests scheduled for today. Add a new one to begin.</p>
+      </ng-template>
+    </article>
   </section>
 </main>

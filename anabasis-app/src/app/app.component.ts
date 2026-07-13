@@ -1,140 +1,170 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-const RADIUS = 88;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-
-const TICK_COUNT = 48;
-const TICK_INNER_R = 68;
-const TICK_OUTER_R = 76;
-
-interface Tick {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-}
-
-function buildTicks(): Tick[] {
-  const ticks: Tick[] = [];
-  for (let i = 0; i < TICK_COUNT; i++) {
-    const angle = (i / TICK_COUNT) * 2 * Math.PI;
-    ticks.push({
-      x1: 100 + TICK_INNER_R * Math.cos(angle),
-      y1: 100 + TICK_INNER_R * Math.sin(angle),
-      x2: 100 + TICK_OUTER_R * Math.cos(angle),
-      y2: 100 + TICK_OUTER_R * Math.sin(angle),
-    });
-  }
-  return ticks;
-}
-
-interface Stage {
-  percent: number;
-  tag: number;
-}
-
-const STAGES: Stage[] = [
-  { percent: 20, tag: 0 }, // Level 4 reached
-  { percent: 45, tag: 1 }, // New quest available
-  { percent: 70, tag: 2 }, // 7-day streak active
-  { percent: 90, tag: 3 }, // Quest completed: +50 XP
-];
-
-const FILL_SEGMENT_MS = 800;
-const TAG_HOLD_MS = 1400;
-const TAG_FADE_MS = 450;
-const LOOP_RESTART_DELAY_MS = 500;
-const LOOP_END_HOLD_MS = 1200;
+import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { AuthService } from './auth.service';
+import { QuestService } from './quest.service';
+import { Difficulty, QuestInstance, SessionUser, UserProgress } from './models';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit, OnDestroy {
-  readonly circumference = CIRCUMFERENCE;
-  readonly level = 4;
-  readonly ticks = buildTicks();
+  readonly weekdays = [
+    { value: 0, label: 'Sun' },
+    { value: 1, label: 'Mon' },
+    { value: 2, label: 'Tue' },
+    { value: 3, label: 'Wed' },
+    { value: 4, label: 'Thu' },
+    { value: 5, label: 'Fri' },
+    { value: 6, label: 'Sat' },
+  ];
 
-  percent = 0;
-  dashoffset = CIRCUMFERENCE;
-  activeTag = -1;
+  sessionUser: SessionUser | null = null;
+  quests: QuestInstance[] = [];
+  progress: UserProgress = { totalXp: 0, level: 1, currentStreak: 0 };
+  levelProgress = { percent: 0, current: 0, needed: 100 };
 
-  private rafId: number | null = null;
-  private destroyed = false;
+  authMode: 'login' | 'register' = 'login';
+  authEmail = '';
+  authPassword = '';
+
+  questTitle = '';
+  questDifficulty: Difficulty = 'easy';
+  recurrenceType: 'daily' | 'weekdays' | 'custom' = 'daily';
+  customDays = [1, 3, 5];
+
+  statusMessage = '';
+
+  private readonly subscriptions = new Subscription();
+
+  constructor(
+    private readonly authService: AuthService,
+    private readonly questService: QuestService
+  ) {}
 
   ngOnInit(): void {
-    this.runLoop();
+    this.subscriptions.add(
+      this.authService.session$.subscribe((session) => {
+        this.sessionUser = session;
+        this.statusMessage = '';
+
+        if (session) {
+          this.questService.initializeForUser(session.id);
+          this.levelProgress = this.questService.getTodayProgress();
+        } else {
+          this.questService.clearState();
+        }
+      })
+    );
+
+    this.subscriptions.add(
+      this.questService.todayQuests$.subscribe((quests) => {
+        this.quests = quests;
+      })
+    );
+
+    this.subscriptions.add(
+      this.questService.progress$.subscribe((progress) => {
+        this.progress = progress;
+        this.levelProgress = this.questService.getTodayProgress();
+      })
+    );
   }
 
   ngOnDestroy(): void {
-    this.destroyed = true;
-    if (this.rafId !== null) {
-      cancelAnimationFrame(this.rafId);
+    this.subscriptions.unsubscribe();
+  }
+
+  submitAuth(): void {
+    if (this.authMode === 'register') {
+      const result = this.authService.register(this.authEmail, this.authPassword);
+      this.statusMessage = result.message;
+    } else {
+      const result = this.authService.login(this.authEmail, this.authPassword);
+      this.statusMessage = result.message;
+    }
+
+    if (this.sessionUser) {
+      this.authEmail = '';
+      this.authPassword = '';
     }
   }
 
-  private async runLoop(): Promise<void> {
-    while (!this.destroyed) {
-      this.percent = 0;
-      this.dashoffset = this.circumference;
-      this.activeTag = -1;
-      await this.wait(LOOP_RESTART_DELAY_MS);
+  logout(): void {
+    this.authService.logout();
+    this.statusMessage = 'Logged out.';
+  }
 
-      for (const stage of STAGES) {
-        if (this.destroyed) return;
-        await this.animateFillTo(stage.percent, FILL_SEGMENT_MS);
+  addQuest(): void {
+    if (!this.sessionUser) {
+      return;
+    }
 
-        if (this.destroyed) return;
-        this.activeTag = stage.tag;
-        await this.wait(TAG_HOLD_MS);
+    const recurrenceDays = this.recurrenceType === 'custom'
+      ? [...this.customDays]
+      : [];
 
-        if (this.destroyed) return;
-        this.activeTag = -1;
-        await this.wait(TAG_FADE_MS);
+    const result = this.questService.createQuestTemplate(
+      this.sessionUser.id,
+      this.questTitle,
+      this.questDifficulty,
+      {
+        type: this.recurrenceType,
+        daysOfWeek: recurrenceDays,
       }
+    );
 
-      if (this.destroyed) return;
-      await this.wait(LOOP_END_HOLD_MS);
+    this.statusMessage = result.message;
+    if (result.ok) {
+      this.questTitle = '';
+      this.questDifficulty = 'easy';
+      this.recurrenceType = 'daily';
+      this.customDays = [1, 3, 5];
     }
   }
 
-  private animateFillTo(toPercent: number, duration: number): Promise<void> {
-    const fromPercent = this.percent;
-    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+  completeQuest(questId: string): void {
+    if (!this.sessionUser) {
+      return;
+    }
 
-    return new Promise((resolve) => {
-      const start = performance.now();
-
-      const step = (now: number) => {
-        if (this.destroyed) {
-          resolve();
-          return;
-        }
-
-        const t = Math.min((now - start) / duration, 1);
-        const eased = easeOutCubic(t);
-        const current = fromPercent + (toPercent - fromPercent) * eased;
-
-        this.percent = Math.round(current);
-        this.dashoffset = this.circumference * (1 - current / 100);
-
-        if (t < 1) {
-          this.rafId = requestAnimationFrame(step);
-        } else {
-          this.rafId = null;
-          resolve();
-        }
-      };
-
-      this.rafId = requestAnimationFrame(step);
-    });
+    const result = this.questService.completeQuest(this.sessionUser.id, questId);
+    this.statusMessage = result.ok && result.gainedXp
+      ? `${result.message} +${result.gainedXp} XP`
+      : result.message;
   }
 
-  private wait(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  toggleCustomDay(day: number): void {
+    if (this.customDays.includes(day)) {
+      this.customDays = this.customDays.filter((d) => d !== day);
+      return;
+    }
+
+    this.customDays = [...this.customDays, day].sort((a, b) => a - b);
+  }
+
+  isDaySelected(day: number): boolean {
+    return this.customDays.includes(day);
+  }
+
+  get completionCount(): number {
+    return this.quests.filter((q) => !!q.completedAt).length;
+  }
+
+  difficultyLabel(difficulty: Difficulty): string {
+    if (difficulty === 'easy') {
+      return 'Easy';
+    }
+
+    if (difficulty === 'medium') {
+      return 'Medium';
+    }
+
+    return 'Hard';
   }
 }
