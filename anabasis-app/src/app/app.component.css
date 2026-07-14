@@ -59,6 +59,17 @@
 .logo-mark-wrap .w4 { left: 36%; width: 7px;  height: 7px;  animation-delay: 1.4s; }
 .logo-mark-wrap .w5 { left: 55%; width: 8px;  height: 8px;  animation-delay: 1.9s; }
 
+.knob-mark-wrap {
+  width: 2.6rem;
+  height: 2.6rem;
+}
+
+.knob-mark-wrap .w1 { width: 13px; height: 13px; }
+.knob-mark-wrap .w2 { width: 10px; height: 10px; }
+.knob-mark-wrap .w3 { width: 13px; height: 13px; }
+.knob-mark-wrap .w4 { width: 9px;  height: 9px; }
+.knob-mark-wrap .w5 { width: 10px; height: 10px; }
+
 @keyframes wispRise {
   0%   { opacity: 0;    transform: translateY(0) scale(0.8); }
   20%  { opacity: 0.85; }
@@ -92,26 +103,13 @@
   100%    { color: #241b33; filter: none; }
 }
 
-.knob-glow {
-  animation: knobPulse 2.6s ease-in-out infinite;
-}
-
-@keyframes knobPulse {
-  0%, 100% { filter: drop-shadow(0 0 6px rgba(255,107,0,0.55)) drop-shadow(0 0 14px rgba(255,107,0,0.25)); }
-  50%      { filter: drop-shadow(0 0 13px rgba(255,107,0,0.95)) drop-shadow(0 0 28px rgba(255,107,0,0.55)); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .logo-mark-wrap .wisp,
-  .mark-shadow,
-  .knob-glow {
+  .mark-shadow {
     animation: none;
   }
   .mark-shadow {
     color: #FF6B00;
     filter: drop-shadow(0 0 6px rgba(255, 107, 0, 0.6));
-  }
-  .knob-glow {
-    filter: drop-shadow(0 0 8px rgba(255, 107, 0, 0.7));
   }
 }
