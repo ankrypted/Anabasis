@@ -92,13 +92,26 @@
   100%    { color: #241b33; filter: none; }
 }
 
+.knob-glow {
+  animation: knobPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes knobPulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(255,107,0,0.55)) drop-shadow(0 0 14px rgba(255,107,0,0.25)); }
+  50%      { filter: drop-shadow(0 0 13px rgba(255,107,0,0.95)) drop-shadow(0 0 28px rgba(255,107,0,0.55)); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .logo-mark-wrap .wisp,
-  .mark-shadow {
+  .mark-shadow,
+  .knob-glow {
     animation: none;
   }
   .mark-shadow {
     color: #FF6B00;
     filter: drop-shadow(0 0 6px rgba(255, 107, 0, 0.6));
+  }
+  .knob-glow {
+    filter: drop-shadow(0 0 8px rgba(255, 107, 0, 0.7));
   }
 }
