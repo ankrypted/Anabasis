@@ -73,11 +73,23 @@
   animation: markIgnite 3.6s ease-in-out infinite;
 }
 
+.ascent-icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  display: block;
+}
+
+.ascent-icon-sm {
+  width: 0.9rem;
+  height: 0.9rem;
+  display: block;
+}
+
 @keyframes markIgnite {
-  0%, 10% { color: #241b33; text-shadow: none; }
-  55%     { color: #FF6B00; text-shadow: 0 0 10px rgba(255,107,0,0.75), 0 0 20px rgba(124,108,255,0.35); }
-  85%     { color: #FF6B00; text-shadow: 0 0 10px rgba(255,107,0,0.75), 0 0 20px rgba(124,108,255,0.35); }
-  100%    { color: #241b33; text-shadow: none; }
+  0%, 10% { color: #241b33; filter: none; }
+  55%     { color: #FF6B00; filter: drop-shadow(0 0 6px rgba(255,107,0,0.75)) drop-shadow(0 0 14px rgba(124,108,255,0.3)); }
+  85%     { color: #FF6B00; filter: drop-shadow(0 0 6px rgba(255,107,0,0.75)) drop-shadow(0 0 14px rgba(124,108,255,0.3)); }
+  100%    { color: #241b33; filter: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -87,6 +99,6 @@
   }
   .mark-shadow {
     color: #FF6B00;
-    text-shadow: 0 0 10px rgba(255, 107, 0, 0.6);
+    filter: drop-shadow(0 0 6px rgba(255, 107, 0, 0.6));
   }
 }
