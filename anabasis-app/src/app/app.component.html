@@ -1,23 +1,35 @@
-<main class="min-h-screen w-full bg-black text-white overflow-hidden relative">
+<main class="min-h-screen w-full bg-black text-white relative">
   <!-- ambient glow -->
   <div class="pointer-events-none absolute -top-40 left-10 h-96 w-96 rounded-full bg-neon-orange/20 blur-3xl"></div>
 
   <!-- nav -->
   <nav class="relative z-10 flex items-center justify-between px-8 md:px-16 py-6">
     <div class="flex items-center gap-2">
-      <span class="text-neon-orange text-xl">✱</span>
+      <span class="logo-mark-wrap">
+        <span class="wisp w1"></span>
+        <span class="wisp w2"></span>
+        <span class="wisp w3"></span>
+        <span class="wisp w4"></span>
+        <span class="wisp w5"></span>
+        <span class="mark-shadow text-xl font-extrabold">✱</span>
+      </span>
       <span class="font-semibold tracking-wide">Anabasis</span>
     </div>
-    <ul class="hidden md:flex items-center gap-10 text-sm text-gray-300">
+    <ul *ngIf="isLoggedIn" class="hidden md:flex items-center gap-10 text-sm text-gray-300">
       <li class="hover:text-white cursor-pointer">Quests</li>
       <li class="hover:text-white cursor-pointer">Progress</li>
       <li class="hover:text-white cursor-pointer">Streaks</li>
       <li class="hover:text-white cursor-pointer">Profile</li>
     </ul>
-    <button
-      class="relative border border-neon-orange/60 text-neon-orange text-xs font-medium tracking-wide px-4 py-2 rounded-sm hover:bg-neon-orange/10 transition-colors">
-      Get Started
-    </button>
+    <div class="flex items-center gap-6">
+      <button *ngIf="!isLoggedIn" class="hidden md:inline text-sm text-gray-300 hover:text-white transition-colors">
+        Log in
+      </button>
+      <button
+        class="relative border border-neon-orange/60 text-neon-orange text-xs font-medium tracking-wide px-4 py-2 rounded-sm hover:bg-neon-orange/10 transition-colors">
+        Get Started
+      </button>
+    </div>
   </nav>
 
   <!-- hero -->
@@ -27,20 +39,20 @@
       <!-- floating tags -->
       
       <div [class.tag-visible]="activeTag === 0"
-        class="tag-chip absolute z-20 -right-36 top-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        Level 4 reached
+        class="tag-chip absolute z-20 -right-20 top-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
+        Add Quests
       </div>
       <div [class.tag-visible]="activeTag === 1"
         class="tag-chip absolute z-20 -right-32 bottom-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        New quest available
+        Finish Tasks
       </div>
       <div [class.tag-visible]="activeTag === 2"
         class="tag-chip absolute z-20 -left-24 bottom-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        7-day streak active
+        Keep Streak Active
       </div>
       <div [class.tag-visible]="activeTag === 3"
         class="tag-chip absolute z-20 -left-32 top-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
-        Quest completed: +50 XP
+        Gain XP
       </div>
       
 
@@ -103,9 +115,67 @@
         </p>
       </div>
       <div class="text-left md:text-right">
-        <div class="text-5xl md:text-6xl font-bold text-neon-orange drop-shadow-neon leading-none">Level {{ level }}</div>
-        <div class="mt-2 text-neon-orange/90 text-sm md:text-base">{{ percent }}% to next level</div>
+        <div class="text-5xl md:text-6xl font-bold text-neon-orange drop-shadow-neon leading-none">{{ percent }}%</div>
+        <div class="mt-2 text-neon-orange/90 text-sm md:text-base">to next level</div>
       </div>
     </div>
   </section>
+
+  <!-- how it works -->
+  <section #coreLoopSection class="relative z-10 px-8 md:px-16 py-20 border-t border-white/10">
+    <h2 class="text-xl md:text-2xl font-bold text-center mb-2">The Core Loop</h2>
+    <p class="text-gray-400 text-sm text-center mb-14">Five steps, repeated daily, that turn your goals into a game.</p>
+    <div class="relative grid grid-cols-2 gap-y-10 md:grid-cols-5 md:gap-0">
+      <!-- connector track -->
+      <div class="hidden md:block absolute top-6 h-0.5 bg-white/10" style="left: 10%; right: 10%;"></div>
+      <div class="hidden md:block absolute top-6 h-0.5 bg-gradient-to-r from-neon-orange to-neon-glow shadow-neon-sm transition-[width] duration-75"
+        style="left: 10%;" [style.width.%]="lineProgress * 0.8"></div>
+      <div class="hidden md:block absolute top-6" style="left: 10%; right: 10%;">
+        <div *ngIf="lineProgress > 0 && lineProgress < 100" class="pulse-glow" [style.left.%]="lineProgress * 0.92"></div>
+      </div>
+
+      <div *ngFor="let step of coreLoop; let i = index"
+        [class.step-visible]="isStepVisible(i)"
+        class="step-item relative z-10 flex flex-col items-center text-center gap-3 px-4">
+        <div class="h-12 w-12 rounded-full border border-neon-orange/50 bg-black flex items-center justify-center text-neon-orange font-bold">
+          {{ i + 1 }}
+        </div>
+        <div class="text-sm font-medium">{{ step }}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- features -->
+  <section class="relative z-10 px-8 md:px-16 py-20 border-t border-white/10">
+    <h2 class="text-xl md:text-2xl font-bold text-center mb-2">Everything You Need To Level Up</h2>
+    <p class="text-gray-400 text-sm text-center mb-14">What you get the moment you sign up.</p>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div *ngFor="let feature of features"
+        class="rounded-lg border border-white/10 bg-white/[0.03] p-6 hover:border-neon-orange/40 transition-colors">
+        <div class="text-neon-orange text-2xl mb-4">{{ feature.icon }}</div>
+        <h3 class="font-semibold mb-2">{{ feature.title }}</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">{{ feature.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- final CTA -->
+  <section class="relative z-10 px-8 md:px-16 py-24 border-t border-white/10 text-center">
+    <h2 class="text-2xl md:text-4xl font-extrabold mb-4">Ready to start your climb?</h2>
+    <p class="text-gray-400 text-sm md:text-base mb-8 max-w-md mx-auto">
+      Create your first quest in under a minute. No credit card, no pressure — just progress.
+    </p>
+    <button
+      class="border border-neon-orange/60 text-neon-orange text-sm font-medium tracking-wide px-6 py-3 rounded-sm hover:bg-neon-orange/10 transition-colors">
+      Create Free Account
+    </button>
+  </section>
+
+  <!-- footer -->
+  <footer class="relative z-10 px-8 md:px-16 py-8 border-t border-white/10 flex items-center justify-between text-xs text-gray-500">
+    <span>© {{ currentYear }} Anabasis</span>
+    <span class="flex items-center gap-2">
+      <span class="text-neon-orange">✱</span> Complete quests. Level up your life.
+    </span>
+  </footer>
 </main>
