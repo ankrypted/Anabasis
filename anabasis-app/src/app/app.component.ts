@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 const RADIUS = 88;
@@ -47,6 +47,10 @@ const TAG_FADE_MS = 450;
 const LOOP_RESTART_DELAY_MS = 500;
 const LOOP_END_HOLD_MS = 1200;
 
+const CORE_LOOP_LINE_MS = 1800;
+const CORE_LOOP_RESTART_DELAY_MS = 500;
+const CORE_LOOP_END_HOLD_MS = 1400;
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -54,20 +58,72 @@ const LOOP_END_HOLD_MS = 1200;
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly circumference = CIRCUMFERENCE;
   readonly level = 4;
   readonly ticks = buildTicks();
+
+  // Placeholder until the real auth service is wired up.
+  isLoggedIn = false;
+
+  readonly currentYear = new Date().getFullYear();
+
+  readonly coreLoop = ['Create Quest', 'Complete Quest', 'Earn XP', 'Build Streak', 'Level Up'];
+
+  readonly features = [
+    {
+      icon: '📜',
+      title: 'Quest Management',
+      description: 'Create, edit, and track quests with custom difficulty, deadlines, and recurrence.',
+    },
+    {
+      icon: '⚡',
+      title: 'XP & Leveling',
+      description: 'Earn XP based on difficulty and level up automatically as you progress.',
+    },
+    {
+      icon: '🔥',
+      title: 'Streaks',
+      description: 'Build consecutive completion streaks and track your current and longest runs.',
+    },
+    {
+      icon: '📊',
+      title: 'Dashboard',
+      description: 'See your full progression history and overall progress at a glance.',
+    },
+  ];
 
   percent = 0;
   dashoffset = CIRCUMFERENCE;
   activeTag = -1;
 
+  @ViewChild('coreLoopSection') coreLoopSection?: ElementRef<HTMLElement>;
+  lineProgress = 0;
+
   private rafId: number | null = null;
+  private coreLoopRafId: number | null = null;
+  private coreLoopObserver: IntersectionObserver | null = null;
+  private coreLoopStarted = false;
   private destroyed = false;
 
   ngOnInit(): void {
     this.runLoop();
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.coreLoopSection) return;
+
+    this.coreLoopObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting && !this.coreLoopStarted) {
+          this.coreLoopStarted = true;
+          this.runCoreLoopAnimation();
+          this.coreLoopObserver?.disconnect();
+        }
+      }
+    }, { threshold: 0.4 });
+
+    this.coreLoopObserver.observe(this.coreLoopSection.nativeElement);
   }
 
   ngOnDestroy(): void {
@@ -75,6 +131,53 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.rafId !== null) {
       cancelAnimationFrame(this.rafId);
     }
+    if (this.coreLoopRafId !== null) {
+      cancelAnimationFrame(this.coreLoopRafId);
+    }
+    this.coreLoopObserver?.disconnect();
+  }
+
+  isStepVisible(index: number): boolean {
+    const thresholdPercent = (index / (this.coreLoop.length - 1)) * 100;
+    return this.lineProgress >= thresholdPercent;
+  }
+
+  private async runCoreLoopAnimation(): Promise<void> {
+    while (!this.destroyed) {
+      this.lineProgress = 0;
+      await this.wait(CORE_LOOP_RESTART_DELAY_MS);
+
+      if (this.destroyed) return;
+      await this.animateCoreLoopFill(CORE_LOOP_LINE_MS);
+
+      if (this.destroyed) return;
+      await this.wait(CORE_LOOP_END_HOLD_MS);
+    }
+  }
+
+  private animateCoreLoopFill(duration: number): Promise<void> {
+    return new Promise((resolve) => {
+      const start = performance.now();
+
+      const step = (now: number) => {
+        if (this.destroyed) {
+          resolve();
+          return;
+        }
+
+        const t = Math.min((now - start) / duration, 1);
+        this.lineProgress = Math.round(t * 100);
+
+        if (t < 1) {
+          this.coreLoopRafId = requestAnimationFrame(step);
+        } else {
+          this.coreLoopRafId = null;
+          resolve();
+        }
+      };
+
+      this.coreLoopRafId = requestAnimationFrame(step);
+    });
   }
 
   private async runLoop(): Promise<void> {
