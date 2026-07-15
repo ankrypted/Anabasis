@@ -6,3 +6,87 @@
 html, body {
   background-color: #000;
 }
+
+/* Shadow Extraction brand mark ("Ascent" chevrons): violet wisps rise and
+   feed the mark's glow. Global (not component-scoped) since the nav, the
+   dial's center knob, and the dashboard header all reuse it. */
+.logo-mark-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.logo-mark-wrap .wisp {
+  position: absolute;
+  bottom: 15%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(124, 108, 255, 0.55), rgba(124, 108, 255, 0) 70%);
+  filter: blur(2px);
+  opacity: 0;
+  animation: wispRise 3.6s ease-in infinite;
+  pointer-events: none;
+}
+
+.logo-mark-wrap .w1 { left: 20%; width: 10px; height: 10px; animation-delay: 0s; }
+.logo-mark-wrap .w2 { left: 48%; width: 8px;  height: 8px;  animation-delay: 0.5s; }
+.logo-mark-wrap .w3 { left: 62%; width: 10px; height: 10px; animation-delay: 0.9s; }
+.logo-mark-wrap .w4 { left: 36%; width: 7px;  height: 7px;  animation-delay: 1.4s; }
+.logo-mark-wrap .w5 { left: 55%; width: 8px;  height: 8px;  animation-delay: 1.9s; }
+
+.knob-mark-wrap {
+  width: 2.6rem;
+  height: 2.6rem;
+}
+
+.knob-mark-wrap .w1 { width: 13px; height: 13px; }
+.knob-mark-wrap .w2 { width: 10px; height: 10px; }
+.knob-mark-wrap .w3 { width: 13px; height: 13px; }
+.knob-mark-wrap .w4 { width: 9px;  height: 9px; }
+.knob-mark-wrap .w5 { width: 10px; height: 10px; }
+
+@keyframes wispRise {
+  0%   { opacity: 0;    transform: translateY(0) scale(0.8); }
+  20%  { opacity: 0.85; }
+  70%  { opacity: 0;    transform: translateY(-20px) scale(1.3); }
+  100% { opacity: 0;    transform: translateY(-20px); }
+}
+
+.mark-shadow {
+  position: relative;
+  z-index: 10;
+  color: #241b33;
+  animation: markIgnite 3.6s ease-in-out infinite;
+}
+
+.ascent-icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  display: block;
+}
+
+.ascent-icon-sm {
+  width: 0.9rem;
+  height: 0.9rem;
+  display: block;
+}
+
+@keyframes markIgnite {
+  0%, 10% { color: #241b33; filter: none; }
+  55%     { color: #FF6B00; filter: drop-shadow(0 0 6px rgba(255,107,0,0.75)) drop-shadow(0 0 14px rgba(124,108,255,0.3)); }
+  85%     { color: #FF6B00; filter: drop-shadow(0 0 6px rgba(255,107,0,0.75)) drop-shadow(0 0 14px rgba(124,108,255,0.3)); }
+  100%    { color: #241b33; filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-mark-wrap .wisp,
+  .mark-shadow {
+    animation: none;
+  }
+  .mark-shadow {
+    color: #FF6B00;
+    filter: drop-shadow(0 0 6px rgba(255, 107, 0, 0.6));
+  }
+}

@@ -1,0 +1,198 @@
+<main class="min-h-screen w-full bg-black text-white relative">
+  <!-- ambient glow -->
+  <div class="pointer-events-none absolute -top-40 left-10 h-96 w-96 rounded-full bg-neon-orange/20 blur-3xl"></div>
+
+  <!-- nav -->
+  <nav class="relative z-10 flex items-center justify-between px-8 md:px-16 py-6">
+    <div class="flex items-center gap-2">
+      <span class="logo-mark-wrap">
+        <span class="wisp w1"></span>
+        <span class="wisp w2"></span>
+        <span class="wisp w3"></span>
+        <span class="wisp w4"></span>
+        <span class="wisp w5"></span>
+        <svg class="mark-shadow ascent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 21 L12 15 L19 21" opacity="0.3" />
+          <path d="M5 15 L12 9 L19 15" opacity="0.6" />
+          <path d="M5 9 L12 3 L19 9" />
+        </svg>
+      </span>
+      <span class="font-semibold tracking-wide">Anabasis</span>
+    </div>
+    <div class="flex items-center gap-6">
+      <a routerLink="/dashboard" class="hidden md:inline text-sm text-gray-300 hover:text-white transition-colors">
+        Log in
+      </a>
+      <a routerLink="/dashboard"
+        class="relative border border-neon-orange/60 text-neon-orange text-xs font-medium tracking-wide px-4 py-2 rounded-sm hover:bg-neon-orange/10 transition-colors">
+        Get Started
+      </a>
+    </div>
+  </nav>
+
+  <!-- hero -->
+  <section class="relative z-10 px-8 md:px-16 pt-8 pb-24">
+    <!-- dial -->
+    <div class="relative mx-auto mb-16 h-[320px] w-[320px] md:h-[380px] md:w-[380px]">
+      <!-- floating tags -->
+
+      <div [class.tag-visible]="activeTag === 0"
+        class="tag-chip absolute z-20 -right-20 top-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
+        Add Quests
+      </div>
+      <div [class.tag-visible]="activeTag === 1"
+        class="tag-chip absolute z-20 -right-32 bottom-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
+        Finish Tasks
+      </div>
+      <div [class.tag-visible]="activeTag === 2"
+        class="tag-chip absolute z-20 -left-24 bottom-16 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
+        Keep Streak Active
+      </div>
+      <div [class.tag-visible]="activeTag === 3"
+        class="tag-chip absolute z-20 -left-32 top-10 hidden md:block whitespace-nowrap border border-neon-orange/40 bg-black/80 text-neon-orange text-xs px-3 py-1.5 rounded-sm">
+        Gain XP
+      </div>
+
+
+      <!-- outer metal bezel -->
+      <div class="absolute inset-0 rounded-full"
+        style="background: radial-gradient(circle at 32% 28%, #4a4a4a 0%, #1c1c1c 45%, #000 75%);
+               box-shadow: 0 25px 50px -12px rgba(0,0,0,0.9), inset 0 2px 3px rgba(255,255,255,0.08), inset 0 -10px 24px rgba(0,0,0,0.85);">
+      </div>
+
+      <!-- recessed face -->
+      <div class="absolute inset-8 rounded-full"
+        style="background: radial-gradient(circle at 35% 30%, #202020 0%, #0a0a0a 55%, #000 100%);
+               box-shadow: inset 0 6px 16px rgba(0,0,0,0.9), inset 0 -4px 10px rgba(255,255,255,0.04);">
+      </div>
+
+      <!-- tick marks -->
+      <svg viewBox="0 0 200 200" class="absolute inset-0 h-full w-full">
+        <g stroke="#FF9A4D" stroke-width="1.4" stroke-linecap="round" opacity="0.45">
+          <line *ngFor="let t of ticks" [attr.x1]="t.x1" [attr.y1]="t.y1" [attr.x2]="t.x2" [attr.y2]="t.y2" />
+        </g>
+      </svg>
+
+      <!-- glowing progress ring (torus highlight) -->
+      <svg viewBox="0 0 200 200" class="absolute inset-0 h-full w-full -rotate-90">
+        <defs>
+          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFD9A0" />
+            <stop offset="45%" stop-color="#FF6B00" />
+            <stop offset="100%" stop-color="#B23F00" />
+          </linearGradient>
+        </defs>
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#1a1a1a" stroke-width="7" />
+        <circle
+          cx="100" cy="100" r="88" fill="none"
+          stroke="url(#ringGrad)" stroke-width="7" stroke-linecap="round"
+          [attr.stroke-dasharray]="circumference"
+          [attr.stroke-dashoffset]="dashoffset"
+          class="drop-shadow-neon" />
+      </svg>
+
+      <!-- center knob -->
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div class="flex h-20 w-20 items-center justify-center rounded-full"
+          style="background: radial-gradient(circle at 35% 30%, #4a4a4a 0%, #0c0c0c 60%, #000 100%);
+                 box-shadow: 0 6px 14px rgba(0,0,0,0.8), inset 0 2px 3px rgba(255,255,255,0.18), inset 0 -4px 8px rgba(0,0,0,0.85);">
+          <span class="logo-mark-wrap knob-mark-wrap">
+            <span class="wisp w1"></span>
+            <span class="wisp w2"></span>
+            <span class="wisp w3"></span>
+            <span class="wisp w4"></span>
+            <span class="wisp w5"></span>
+            <svg class="mark-shadow" style="width: 2.1rem; height: 2.1rem;" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 21 L12 15 L19 21" opacity="0.3" />
+              <path d="M5 15 L12 9 L19 15" opacity="0.6" />
+              <path d="M5 9 L12 3 L19 9" />
+            </svg>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- copy row -->
+    <div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-10">
+      <div class="max-w-xl">
+        <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">
+          COMPLETE QUESTS.<br />LEVEL UP YOUR LIFE.
+        </h1>
+        <p class="mt-4 text-gray-400 text-sm md:text-base">
+          Turn your goals into quests, earn XP for every completion, and
+          watch your streak and level grow in real time.
+        </p>
+      </div>
+      <div class="text-left md:text-right">
+        <div class="text-5xl md:text-6xl font-bold text-neon-orange drop-shadow-neon leading-none">{{ percent }}%</div>
+        <div class="mt-2 text-neon-orange/90 text-sm md:text-base">to next level</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- how it works -->
+  <section #coreLoopSection class="relative z-10 px-8 md:px-16 py-20 border-t border-white/10">
+    <h2 class="text-xl md:text-2xl font-bold text-center mb-2">The Core Loop</h2>
+    <p class="text-gray-400 text-sm text-center mb-14">Five steps, repeated daily, that turn your goals into a game.</p>
+    <div class="relative grid grid-cols-2 gap-y-10 md:grid-cols-5 md:gap-0">
+      <!-- connector track -->
+      <div class="hidden md:block absolute top-6 h-0.5 bg-white/10" style="left: 10%; right: 10%;"></div>
+      <div class="hidden md:block absolute top-6 h-0.5 bg-gradient-to-r from-neon-orange to-neon-glow shadow-neon-sm transition-[width] duration-75"
+        style="left: 10%;" [style.width.%]="lineProgress * 0.8"></div>
+      <div class="hidden md:block absolute top-6" style="left: 10%; right: 10%;">
+        <div *ngIf="lineProgress > 0 && lineProgress < 100" class="pulse-glow" [style.left.%]="lineProgress * 0.92"></div>
+      </div>
+
+      <div *ngFor="let step of coreLoop; let i = index"
+        [class.step-visible]="isStepVisible(i)"
+        class="step-item relative z-10 flex flex-col items-center text-center gap-3 px-4">
+        <div class="h-12 w-12 rounded-full border border-neon-orange/50 bg-black flex items-center justify-center text-neon-orange font-bold">
+          {{ i + 1 }}
+        </div>
+        <div class="text-sm font-medium">{{ step }}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- features -->
+  <section class="relative z-10 px-8 md:px-16 py-20 border-t border-white/10">
+    <h2 class="text-xl md:text-2xl font-bold text-center mb-2">Everything You Need To Level Up</h2>
+    <p class="text-gray-400 text-sm text-center mb-14">What you get the moment you sign up.</p>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div *ngFor="let feature of features"
+        class="rounded-lg border border-white/10 bg-white/[0.03] p-6 hover:border-neon-orange/40 transition-colors">
+        <div class="text-neon-orange text-2xl mb-4">{{ feature.icon }}</div>
+        <h3 class="font-semibold mb-2">{{ feature.title }}</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">{{ feature.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- final CTA -->
+  <section class="relative z-10 px-8 md:px-16 py-24 border-t border-white/10 text-center">
+    <h2 class="text-2xl md:text-4xl font-extrabold mb-4">Ready to start your climb?</h2>
+    <p class="text-gray-400 text-sm md:text-base mb-8 max-w-md mx-auto">
+      Create your first quest in under a minute. No credit card, no pressure — just progress.
+    </p>
+    <a routerLink="/dashboard"
+      class="inline-block border border-neon-orange/60 text-neon-orange text-sm font-medium tracking-wide px-6 py-3 rounded-sm hover:bg-neon-orange/10 transition-colors">
+      Create Free Account
+    </a>
+  </section>
+
+  <!-- footer -->
+  <footer class="relative z-10 px-8 md:px-16 py-8 border-t border-white/10 flex items-center justify-between text-xs text-gray-500">
+    <span>© {{ currentYear }} Anabasis</span>
+    <span class="flex items-center gap-2">
+      <svg class="ascent-icon-sm text-neon-orange" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 21 L12 15 L19 21" opacity="0.3" />
+        <path d="M5 15 L12 9 L19 15" opacity="0.6" />
+        <path d="M5 9 L12 3 L19 9" />
+      </svg>
+      Complete quests. Level up your life.
+    </span>
+  </footer>
+</main>
